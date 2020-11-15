@@ -36,3 +36,33 @@ function convertString($a, $b)
 //print_r(convertString($a, $b));
 
 
+/** функию mySortForKey($a, $b). $a – двумерный массив вида [['a'=>2,'b'=>1],['a'=>1,'b'=>3]], $b – ключ вложенного массива.
+ * Результат ее выполнения: двумерном массива $a отсортированный по возрастанию значений для ключа $b.
+ * В случае отсутствия ключа $b в одном из вложенных массивов, выбросить ошибку класса Exception с индексом неправильного массива.
+ */
+
+
+function mySortForKey($a, $b)
+{
+
+    foreach ($a as $key => $value) {
+        if ($value[$b] == null) {
+            throw new OutOfBoundsException("$a[$value][$key] - неверный индекс массива");
+        }
+    }
+
+    $keys = array_column($a, $b);
+
+    array_multisort($keys, SORT_ASC, $a);
+
+    return $a;
+
+}
+
+/*$a = [
+    ['a' => 2, 'b' => 3],
+    ['a' => 1, 'b' => 2],
+    ['a' => 6, 'b' => 1]
+];
+
+print_r(mySortForKey($a, 'b'));*/
