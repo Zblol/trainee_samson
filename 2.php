@@ -157,3 +157,66 @@ function importXml($a)
 
 //$a = "2.xml";
 //importXml($a);
+
+/** Реализовать функцию exportXml($a, $b). $a – путь к xml файлу вида (структура файла приведена ниже), $b – код рубрики.
+ * Результат ее выполнения: выбрать из БД товары (и их характеристики, необходимые для формирования файла)
+ * выходящие в рубрику $b или в любую из всех вложенных в нее рубрик, сохранить результат в файл $a.
+ */
+
+
+function exportXml($a, $b)
+{
+    require_once("dataB_conn.php");
+    $dom = new domDocument(1, "utf-8");
+    $dom->formatOutput = true;
+    $root = $dom->createElement('Товары');
+    $dom->appendChild($root);
+
+
+    $qu_category = $pdo->query("SELECT * FROM a_category WHERE код = $b");
+    $category = $qu_category->fetch(PDO::FETCH_ASSOC);
+
+    $data_category_q = $pdo->query("SELECT * FROM a_product_category WHERE категория_ид = $category[категория_ид]");
+
+    while ($data_category = $data_category_q->fetch(PDO::FETCH_ASSOC)) {
+        $data_q = $pdo->query("SELECT * FROM a_product WHERE товар_ид = $data_category[товар_ид]");
+        $data = $data_q->fetch(PDO::FETCH_ASSOC);
+        $dataTag = $dom->createElement('Товар');
+        $dataTag->setAttribute('Код', $data['код']);
+        $dataTag->setAttribute('Название', $data['Название']);
+
+
+        $price_q = $pdo->query("SELECT * FROM a_price WHERE товар_ид = $data[товар_ид]");
+        while ($price = $price_q->fetch(PDO::FETCH_ASSOC)) {
+            $priceTag = $dom->createElement('Цена', $price['цена']);
+            $priceTag->setAttribute('Тип', $price['тип']);
+            $dataTag->appendChild($priceTag);
+        }
+
+
+        $propertiesTag = $dom->createElement('Свойства');
+        $property_q = $pdo->query("SELECT * FROM a_property WHERE товар_ид = $data[товар_ид]");
+        while ($property = $property_q->fetch(PDO::FETCH_ASSOC)) {
+            $propertyTag = $dom->createElement($property['Название'], $property['Свойства']);
+            $propertiesTag->appendChild($propertyTag);
+            $dataTag->appendChild($propertiesTag);
+        }
+
+
+        $catalogsTag = $dom->createElement('Разделы');
+        $catalogTag = $dom->createElement('Раздел', $category['Название']);
+        $catalogsTag->appendChild($catalogTag);
+        $dataTag->appendChild($catalogsTag);
+
+        $root->appendChild($dataTag);
+
+
+    }
+
+    $dom->save($a);
+
+}
+
+//$a = 'some.xml';
+//$b = 1;
+//exportXml($a,$b);
