@@ -177,7 +177,7 @@ function gettype($value): string
     if (is_object($value)) {
         $type = get_class($value);
         do {
-            if (strpos($type, "Test3\newBase") !== false) { //if (strpos($type, chr('Test3\newBase')) === false)
+            if (strpos($type, "Test3\newBase") !== false) { //if (!strpos($type, chr('Test3\newBase')))
                 return 'test';
             }
         } while ($type = get_parent_class($type));
