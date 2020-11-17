@@ -37,6 +37,8 @@ class newBase
         $this->value = $value;
         //return $this;  добавить
     }
+
+    //protected $size; добавить
     /**
      * @return string
      */
