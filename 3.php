@@ -8,10 +8,10 @@ class newBase
     /**
      * @param string $name
      */
-    function __construct(int $name = 0)
+    function __construct(int $name = 0) //function __construct(string $name = '')
     {
         if (empty($name)) {
-            while (array_search(self::$count, self::$arSetName) != false) {
+            while (array_search(self::$count, self::$arSetName) != false) { //while (array_search(self::$count, self::$arSetName)) {
                 ++self::$count;
             }
             $name = self::$count;
@@ -20,6 +20,7 @@ class newBase
         self::$arSetName[] = $this->name;
     }
     private $name;
+  //protected $name; изменить
     /**
      * @return string
      */
@@ -29,11 +30,12 @@ class newBase
     }
     protected $value;
     /**
-     * @param mixed $value
+     * @param $value
      */
     public function setValue($value)
     {
         $this->value = $value;
+        //return $this;  добавить
     }
     /**
      * @return string
@@ -52,7 +54,7 @@ class newBase
      */
     public function getSave(): string
     {
-        $value = serialize($value);
+        $value = serialize($value); //$value = serialize($this->value);
         return $this->name . ':' . sizeof($value) . ':' . $value;
     }
     /**
@@ -63,13 +65,14 @@ class newBase
         $arValue = explode(':', $value);
         return (new newBase($arValue[0]))
             ->setValue(unserialize(substr($value, strlen($arValue[0]) + 1
-                + strlen($arValue[1]) + 1), $arValue[1]));
+                + strlen($arValue[1]) + 1), $arValue[1])); // + strlen($arValue[1]) + 1, $arValue[1])));
+
     }
 }
 class newView extends newBase
 {
     private $type = null;
-    private $size = 0;
+    private $size = 0; //удалить private $size = 0;
     private $property = null;
     /**
      * @param mixed $value
@@ -79,6 +82,7 @@ class newView extends newBase
         parent::setValue($value);
         $this->setType();
         $this->setSize();
+        //return $this;  добавить
     }
     public function setProperty($value)
     {
@@ -88,10 +92,11 @@ class newView extends newBase
     private function setType()
     {
         $this->type = gettype($this->value);
+        //return $this;  добавить
     }
     private function setSize()
     {
-        if (is_subclass_of($this->value, "Test3\newView")) {
+        if (is_subclass_of($this->value, "Test3\newView")) { //if (is_subclass_of($this->value, 'Test3\newView')) {
             $this->size = parent::getSize() + 1 + strlen($this->property);
         } elseif ($this->type == 'test') {
             $this->size = parent::getSize();
@@ -114,7 +119,7 @@ class newView extends newBase
         if (empty($this->name)) {
             throw new Exception('The object doesn\'t have name');
         }
-        return '"' . $this->name  . '": ';
+        return '"' . $this->name  . '": '; //return 'name "' . $this->name . '"; ';
     }
     /**
      * @return string
@@ -157,9 +162,9 @@ class newView extends newBase
     static public function load(string $value): newBase
     {
         $arValue = explode(':', $value);
-        return (new newBase($arValue[0]))
+        return (new newBase($arValue[0])) //return (new newView($arValue[0]))
             ->setValue(unserialize(substr($value, strlen($arValue[0]) + 1
-                + strlen($arValue[1]) + 1), $arValue[1]))
+                + strlen($arValue[1]) + 1), $arValue[1]))// + strlen($arValue[1]) + 1, $arValue[1])))
             ->setProperty(unserialize(substr($value, strlen($arValue[0]) + 1
                 + strlen($arValue[1]) + 1 + $arValue[1])))
             ;
@@ -170,7 +175,7 @@ function gettype($value): string
     if (is_object($value)) {
         $type = get_class($value);
         do {
-            if (strpos($type, "Test3\newBase") !== false) {
+            if (strpos($type, "Test3\newBase") !== false) { //if (strpos($type, chr('Test3\newBase')) === false)
                 return 'test';
             }
         } while ($type = get_parent_class($type));
@@ -182,7 +187,7 @@ function gettype($value): string
 $obj = new newBase('12345');
 $obj->setValue('text');
 
-$obj2 = new \Test3\newView('O9876');
+$obj2 = new \Test3\newView('O9876'); //$obj2 = new \Test3\newView('09876');
 $obj2->setValue($obj);
 $obj2->setProperty('field');
 $obj2->getInfo();
